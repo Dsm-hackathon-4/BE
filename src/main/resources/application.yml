@@ -58,7 +58,10 @@ jwt:
   header: ${JWT_HEADER}
   prefix: ${JWT_PREFIX}
   secret: ${JWT_SECRET}
-  access-expiration: 3600
+  access-expiration: 604800
   refresh-expiration: 604800
 
+server:
+  address: 0.0.0.0
+  port: 8080
 

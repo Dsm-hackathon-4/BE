@@ -22,8 +22,13 @@ class GlobalExceptionFilter(
         try {
             filterChain.doFilter(request, response)
         } catch (e: DsmHackerException) {
+            println("DsmHackerException 발생: ${e.message}")
+            e.printStackTrace()
             setErrorResponse(response, e.errorCode, request.requestURI)
         } catch (e: Exception) {
+            println("일반 Exception 발생: ${e.message}")
+            println("요청 URI: ${request.requestURI}")
+            e.printStackTrace()
             setErrorResponse(response, ErrorCode.INTERNAL_SERVER_ERROR, request.requestURI)
         }
     }

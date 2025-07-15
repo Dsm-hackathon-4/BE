@@ -15,11 +15,20 @@ class JwtTokenFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val token = jwtTokenProvider.resolveToken(request)
+        try {
+            val token = jwtTokenProvider.resolveToken(request)
+            println("JWT Token: $token")
 
-        if (token != null) {
-            val authentication = jwtTokenProvider.getAuthentication(token)
-            SecurityContextHolder.getContext().authentication = authentication
+            if (token != null && jwtTokenProvider.validateToken(token)) {
+                val authentication = jwtTokenProvider.getAuthentication(token)
+                SecurityContextHolder.getContext().authentication = authentication
+                println("인증 성공: ${authentication.name}")
+            } else {
+                println("JWT 토큰이 없거나 유효하지 않음")
+            }
+        } catch (e: Exception) {
+            println("JWT 처리 중 오류: ${e.message}")
+            e.printStackTrace()
         }
         
         filterChain.doFilter(request, response)

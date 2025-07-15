@@ -134,6 +134,15 @@ class JwtTokenProvider(
         return UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
     }
 
+    fun validateToken(token: String): Boolean {
+        return try {
+            getJws(token)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     private fun getDetails(body: Claims): UserDetails {
         val role = body["role"].toString()
 

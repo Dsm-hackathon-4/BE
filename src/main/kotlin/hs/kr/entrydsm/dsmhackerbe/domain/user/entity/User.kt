@@ -28,6 +28,8 @@ class User(
 
     val age: String,
 
+    // 연속 학습 일수 있어야 함
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val role: Role,

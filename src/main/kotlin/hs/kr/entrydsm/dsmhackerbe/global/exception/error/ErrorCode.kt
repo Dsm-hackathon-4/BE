@@ -26,6 +26,9 @@ enum class ErrorCode(
     // Admin
     ADMIN_NOT_FOUND(404, "일치하는 어드민을 찾을 수 없습니다"),
 
+    // Request
+    BAD_REQUEST(400, "잘못된 요청입니다"),
+
     // Server
     INTERNAL_SERVER_ERROR(500, "서버 오류 발생");
 }
