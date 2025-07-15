@@ -20,7 +20,7 @@ class UserGoalService(
         var goal = userGoalRepository.findByUserId(user.id!!)
         
         if (goal == null) {
-            goal = UserGoal(userId = user.id, dailyGoal = dailyGoal)
+            goal = UserGoal(userId = user.id!!, dailyGoal = dailyGoal)
         } else {
             goal.updateGoal(dailyGoal)
         }
@@ -35,7 +35,7 @@ class UserGoalService(
         var goal = userGoalRepository.findByUserId(user.id!!)
         
         if (goal == null) {
-            goal = UserGoal(userId = user.id)
+            goal = UserGoal(userId = user.id!!)
             userGoalRepository.save(goal)
         }
         
@@ -49,7 +49,7 @@ class UserGoalService(
             ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
         
         val goal = userGoalRepository.findByUserId(user.id!!)
-            ?: UserGoal(userId = user.id)
+            ?: UserGoal(userId = user.id!!)
         
         goal.resetDailyProgressIfNeeded()
         return goal

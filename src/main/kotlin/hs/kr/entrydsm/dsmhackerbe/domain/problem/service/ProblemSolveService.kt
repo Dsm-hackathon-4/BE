@@ -10,6 +10,7 @@ import hs.kr.entrydsm.dsmhackerbe.domain.problem.repository.UserProblemHistoryRe
 import hs.kr.entrydsm.dsmhackerbe.domain.rank.service.RankingService
 import hs.kr.entrydsm.dsmhackerbe.domain.user.repository.UserRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.user.service.StudyStreakService
+import hs.kr.entrydsm.dsmhackerbe.domain.user.service.UserGoalService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -87,11 +88,6 @@ class ProblemSolveService(
         
         // 목표 진행도 업데이트 (문제를 풀 때마다)
         userGoalService.addProblemProgress(userEmail)
-        
-        // 랭킹에 XP 기록 (정답일 때만)
-        if (isCorrect && xpEarned > 0) {
-            rankingService.recordXp(userEmail, xpEarned)
-        }
         
         return SolveProblemResponse(
             isCorrect = isCorrect,

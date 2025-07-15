@@ -159,40 +159,19 @@ class MyPageService(
     }
     
     private fun getUserGoals(userId: java.util.UUID): UserGoalsResponse {
-        val goal = userGoalRepository.findByUserId(userId) ?: UserGoal(userId = userId)
-        
-        // 오늘 푼 문제 수
-        val today = LocalDate.now()
         val user = userRepository.findById(userId).get()
-        val todayHistory = userProblemHistoryRepository.findByUserOrderBySolvedAtDesc(user)
-            .filter { it.solvedAt.toLocalDate() == today }
-        
-        val todayProgress = todayHistory.size
-        val achievementRate = if (goal.dailyGoal > 0) {
-            ((todayProgress.toDouble() / goal.dailyGoal) * 100).toInt().coerceAtMost(100)
-        } else 0
+        val goal = userGoalService.getUserGoal(user.email)
         
         return UserGoalsResponse(
             dailyGoal = goal.dailyGoal,
-            todayProgress = todayProgress,
-            achievementRate = achievementRate,
+            todayProgress = goal.todayProgress,
+            achievementRate = goal.getAchievementRate(),
             streak = goal.currentStreak
         )
     }
     
     @Transactional
     fun setDailyGoal(userEmail: String, dailyGoal: Int) {
-        val user = userRepository.findByEmail(userEmail)
-            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
-        
-        var goal = userGoalRepository.findByUserId(user.id!!)
-        
-        if (goal == null) {
-            goal = UserGoal(userId = user.id!!, dailyGoal = dailyGoal)
-        } else {
-            goal.updateGoal(dailyGoal)
-        }
-        
-        userGoalRepository.save(goal)
+        userGoalService.setDailyGoal(userEmail, dailyGoal)
     }
 }
