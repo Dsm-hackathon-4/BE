@@ -11,7 +11,7 @@ import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 
-@Tag(name = "User API", description = "사용자 관련 API")
+@Tag(name = "User API", description = "사용자 인증 관련 API")
 interface UserApiDocument {
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")

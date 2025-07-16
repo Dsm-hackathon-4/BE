@@ -1,5 +1,6 @@
 package hs.kr.entrydsm.dsmhackerbe.domain.problem.entity
 
+import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Roadmap
 import jakarta.persistence.*
 
 @Entity
@@ -11,6 +12,10 @@ class Problem(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     val category: Category,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "roadmap_id")
+    val roadmap: Roadmap? = null,
 
     @Column(nullable = false)
     val title: String,

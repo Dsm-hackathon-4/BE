@@ -35,11 +35,19 @@ class UserGoalService(
         var goal = userGoalRepository.findByUserId(user.id!!)
         
         if (goal == null) {
-            goal = UserGoal(userId = user.id!!)
+            // 새 사용자의 경우 현재 풀이 + 3으로 목표 설정
+            goal = UserGoal(userId = user.id!!, dailyGoal = 4) // 1 + 3
             userGoalRepository.save(goal)
         }
         
         goal.addProgress()
+        
+        // 현재 풀이 기준 + 3으로 목표 자동 조정
+        val newGoal = goal.todayProgress + 3
+        if (newGoal != goal.dailyGoal) {
+            goal.updateGoal(newGoal)
+        }
+        
         userGoalRepository.save(goal)
     }
     

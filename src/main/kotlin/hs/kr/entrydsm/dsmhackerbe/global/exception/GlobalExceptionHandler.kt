@@ -5,6 +5,7 @@ import hs.kr.entrydsm.dsmhackerbe.global.exception.error.ErrorResponse
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.slf4j.LoggerFactory
@@ -22,6 +23,17 @@ class GlobalExceptionHandler {
         logger.warn("DsmHackerException: ${exception.message}", exception)
         val errorResponse = ErrorResponse.of(exception.errorCode, request.requestURI, exception)
         return ResponseEntity.status(exception.errorCode.statusCode).body(errorResponse)
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleMethodArgumentNotValidException(
+        exception: MethodArgumentNotValidException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        logger.warn("Validation failed: ${exception.message}", exception)
+        val errorMessage = exception.bindingResult.allErrors.joinToString(", ") { it.defaultMessage ?: "Invalid input" }
+        val errorResponse = ErrorResponse.of(ErrorCode.BAD_REQUEST, request.requestURI, Exception(errorMessage))
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
 
     @ExceptionHandler(IllegalArgumentException::class)

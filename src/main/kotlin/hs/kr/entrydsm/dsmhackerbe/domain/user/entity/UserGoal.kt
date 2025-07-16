@@ -23,6 +23,9 @@ class UserGoal(
     var lastUpdatedDate: LocalDate = LocalDate.now(),
 
     @Column(nullable = false)
+    var lastAchievedDate: LocalDate = LocalDate.now(),
+
+    @Column(nullable = false)
     var currentStreak: Int = 0,
 
     @Column(nullable = false)
@@ -31,6 +34,17 @@ class UserGoal(
     @Column(nullable = false)
     var totalAchievements: Int = 0
 ) {
+    // JPA용 기본 생성자
+    protected constructor() : this(
+        userId = UUID.randomUUID(),
+        dailyGoal = 5,
+        todayProgress = 0,
+        lastUpdatedDate = LocalDate.now(),
+        currentStreak = 0,
+        maxStreak = 0,
+        totalAchievements = 0
+    )
+
     fun updateGoal(newGoal: Int) {
         this.dailyGoal = newGoal
     }
@@ -72,9 +86,20 @@ class UserGoal(
     
     fun resetDailyProgressIfNeeded() {
         val today = LocalDate.now()
-        if (lastUpdatedDate != today) {
-            addProgress() // 날짜 체크 및 진행도 리셋은 addProgress에서 처리
-            todayProgress = 0 // 실제 진행도는 0으로 리셋
+        if (lastUpdatedDate.isBefore(today)) {
+            // 어제 목표 달성 여부 확인
+            if (lastUpdatedDate == today.minusDays(1) && todayProgress >= dailyGoal) {
+                currentStreak++
+                if (currentStreak > maxStreak) {
+                    maxStreak = currentStreak
+                }
+                totalAchievements++
+            } else if (lastUpdatedDate.isBefore(today.minusDays(1))) {
+                currentStreak = 0
+            }
+            
+            todayProgress = 0
+            lastUpdatedDate = today
         }
     }
 }

@@ -22,6 +22,54 @@ class ProblemService(
     private val choiceRepository: ChoiceRepository
 ) {
     
+    // API Document용 새로운 메서드
+    fun getProblems(
+        categoryId: Long?,
+        difficulty: Difficulty?,
+        pageable: Pageable,
+        userEmail: String
+    ): Page<ProblemResponse> {
+        val problems = when {
+            categoryId != null && difficulty != null -> {
+                val category = categoryRepository.findById(categoryId).orElse(null)
+                    ?: throw IllegalArgumentException("카테고리를 찾을 수 없습니다")
+                problemRepository.findByCategoryAndDifficulty(category, difficulty, pageable)
+            }
+            categoryId != null -> {
+                val category = categoryRepository.findById(categoryId).orElse(null)
+                    ?: throw IllegalArgumentException("카테고리를 찾을 수 없습니다")
+                problemRepository.findByCategory(category, pageable)
+            }
+            difficulty != null -> {
+                problemRepository.findByDifficulty(difficulty, pageable)
+            }
+            else -> problemRepository.findAll(pageable)
+        }
+        
+        return problems.map { problem ->
+            val choices = if (isChoiceBasedProblem(problem.type)) {
+                choiceRepository.findByProblemOrderByOrderIndex(problem)
+                    .map { ChoiceResponse.from(it) }
+            } else null
+            
+            ProblemResponse.from(problem, choices)
+        }
+    }
+
+    // API Document용 새로운 메서드
+    fun getProblem(problemId: Long, userEmail: String): ProblemResponse {
+        val problem = problemRepository.findByIdOrNull(problemId)
+            ?: throw IllegalArgumentException("문제를 찾을 수 없습니다")
+        
+        val choices = if (isChoiceBasedProblem(problem.type)) {
+            choiceRepository.findByProblemOrderByOrderIndex(problem)
+                .map { ChoiceResponse.from(it) }
+        } else null
+        
+        return ProblemResponse.from(problem, choices)
+    }
+    
+    // 기존 메서드들 (하위 호환성 유지)
     fun getProblems(
         categoryName: String?,
         difficulty: Difficulty?,

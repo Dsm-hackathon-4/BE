@@ -8,6 +8,7 @@ import hs.kr.entrydsm.dsmhackerbe.domain.problem.repository.ProblemRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.repository.SubjectiveAnswerRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.repository.UserProblemHistoryRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.rank.service.RankingService
+import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.service.RoadmapProgressService
 import hs.kr.entrydsm.dsmhackerbe.domain.user.repository.UserRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.user.service.StudyStreakService
 import hs.kr.entrydsm.dsmhackerbe.domain.user.service.UserGoalService
@@ -26,7 +27,8 @@ class ProblemSolveService(
     private val reviewService: ReviewService,
     private val studyStreakService: StudyStreakService,
     private val rankingService: RankingService,
-    private val userGoalService: UserGoalService
+    private val userGoalService: UserGoalService,
+    private val roadmapProgressService: RoadmapProgressService
 ) {
     
     fun solveProblem(problemId: Long, userAnswer: String, userEmail: String): SolveProblemResponse {
@@ -88,6 +90,11 @@ class ProblemSolveService(
         
         // 목표 진행도 업데이트 (문제를 풀 때마다)
         userGoalService.addProblemProgress(userEmail)
+        
+        // 로드맵 진행도 업데이트 (정답일 때만) ← 새로 추가된 부분!
+        if (isCorrect) {
+            roadmapProgressService.updateRoadmapProgress(userEmail, problem)
+        }
         
         return SolveProblemResponse(
             isCorrect = isCorrect,
