@@ -17,8 +17,8 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST:redis-13768.c340.ap-northeast-2-1.ec2.redns.redis-cloud.com}
-      port: ${REDIS_PORT:13768}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
       username: ${REDIS_USERNAME:default}
       password: ${REDIS_PASSWORD}
       ssl:
@@ -41,7 +41,7 @@ spring:
           kakao:
             client-id: ${KAKAO_CLIENT}
             client-secret: ${KAKAO_SECRET}
-            redirect-uri: ${KAKAO_REDIRECT_URI}
+            redirect-uri: https://hacker2.parkjoowon.site/login/oauth2/code/kakao
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             scope:
@@ -60,9 +60,8 @@ oauth:
   default-password: ${OAUTH_DEFAULT_PASSWORD}
 
 jwt:
-  header: ${JWT_HEADER}
-  prefix: ${JWT_PREFIX}
+  header: ${JWT_HEADER:Authorization}
+  prefix: ${JWT_PREFIX:Bearer}
   secret: ${JWT_SECRET}
   access-expiration: 6048000
   refresh-expiration: 6048000
-
