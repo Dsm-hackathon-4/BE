@@ -32,7 +32,15 @@ class SecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         return http
             .csrf { it.disable() }
-            .cors { it.disable() }
+            .cors { it.configurationSource { 
+                org.springframework.web.cors.CorsConfiguration().apply {
+                    allowedOriginPatterns = listOf("*")
+                    allowedMethods = listOf("*")
+                    allowedHeaders = listOf("*")
+                    allowCredentials = true
+                    maxAge = 3600
+                }
+            }}
             .formLogin { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .headers { 
