@@ -77,9 +77,18 @@ class ProblemSolveService(
                 xpEarned = xpEarned
             )
             userProblemHistoryRepository.save(history)
+            
+            // 사용자 XP 업데이트 (첫 번째 풀이만)
+            if (xpEarned > 0) {
+                user.addXp(xpEarned)
+                userRepository.save(user)
+                
+                // 랭킹 업데이트
+                rankingService.updateUserRanking(user, xpEarned)
+            }
         } else {
-            // 이미 푼 문제 - 기존 기록 업데이트
-            existingHistory.updateResult(isCorrect, userAnswer, xpEarned)
+            // 이미 푼 문제 - 기존 기록 업데이트 (XP는 첫 번째만 지급)
+            existingHistory.updateResult(isCorrect, userAnswer, 0) // XP는 0으로
             userProblemHistoryRepository.save(existingHistory)
         }
         
@@ -108,10 +117,13 @@ class ProblemSolveService(
         // 정답 조회
         val correctAnswer = getCorrectAnswer(problem)
         
+        // 실제 지급된 XP (재풀이는 0)
+        val actualXpEarned = if (existingHistory == null && xpEarned > 0) xpEarned else 0
+        
         return SolveProblemResponse(
             isCorrect = isCorrect,
             correctAnswer = correctAnswer,
-            xpEarned = xpEarned,
+            xpEarned = actualXpEarned,
             explanation = problem.explanation,
             xpBreakdown = null,
             chapterComplete = chapterCompleteInfo

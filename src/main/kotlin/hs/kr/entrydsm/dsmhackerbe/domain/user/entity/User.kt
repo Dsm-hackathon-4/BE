@@ -28,8 +28,6 @@ class User(
 
     val age: String,
 
-    // 연속 학습 일수 있어야 함
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val role: Role,
@@ -38,8 +36,15 @@ class User(
     val coin: Int,
 
     @Column(nullable = false)
+    var totalXp: Int = 0,
+
+    @Column(nullable = false)
     val provider: String
-)
+) {
+    fun addXp(xp: Int) {
+        totalXp += xp
+    }
+}
 
 enum class Gender {
     UNKNOWN,
