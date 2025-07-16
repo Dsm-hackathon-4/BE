@@ -61,8 +61,8 @@ class SecurityConfig(
             
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/oauth2/authorization/google", "/login/oauth2/code/google/**").permitAll()
-                    .requestMatchers("/oauth2/authorization/kakao", "/login/oauth2/code/kakao").permitAll()
+                    .requestMatchers("/oauth2/authorization/google/**", "/login/oauth2/code/google/**").permitAll()
+                    .requestMatchers("/oauth2/authorization/kakao/**", "/login/oauth2/code/kakao/**").permitAll()
                     .requestMatchers("/users/login", "/users/register", "/users/reissue").permitAll()
                     .requestMatchers("/").permitAll()
                     .requestMatchers("/oauth/success/**").permitAll()

@@ -25,7 +25,8 @@ class OAuthSuccessHandler(
             authDetails.authorities.first().authority.removePrefix("ROLE_")
         )
 
-        val redirectUrl = UriComponentsBuilder.fromUriString("/oauth/success")
+        val redirectUrl = UriComponentsBuilder
+            .fromUriString("https://hacker2.parkjoowon.site/oauth/success")
             .queryParam("accessToken", tokenResponse.accessToken)
             .queryParam("refreshToken", tokenResponse.refreshToken)
             .build().toUriString()
