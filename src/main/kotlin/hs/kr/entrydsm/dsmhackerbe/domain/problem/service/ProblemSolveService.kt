@@ -45,12 +45,12 @@ class ProblemSolveService(
             // 객관식형
             ProblemType.MULTIPLE_CHOICE, 
             ProblemType.INITIAL_CHOICE,
-            ProblemType.BLANK_CHOICE,
             ProblemType.WORD_CHOICE,
             ProblemType.OX_CHOICE,
             ProblemType.IMAGE_CHOICE -> checkMultipleChoice(problemId, userAnswer)
             
-            // 주관식형
+            // 주관식형 (빈칸채우기 포함)
+            ProblemType.BLANK_CHOICE,
             ProblemType.SUBJECTIVE,
             ProblemType.INITIAL_SUBJECTIVE,
             ProblemType.BLANK_SUBJECTIVE,
