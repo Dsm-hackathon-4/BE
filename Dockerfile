@@ -1,7 +1,6 @@
 FROM openjdk:17-jdk
 
-RUN apk update && \
-    apk add redis
+RUN apk update && apk add redis
 
 ARG JAR_FILE=./build/libs/*.jar
 
