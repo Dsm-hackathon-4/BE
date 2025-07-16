@@ -11,6 +11,7 @@ import hs.kr.entrydsm.dsmhackerbe.global.security.auth.CustomUserDetailsService
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
+import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
@@ -27,6 +28,8 @@ class JwtTokenProvider(
     private val customAdminDetailsService: CustomAdminDetailsService
 ) {
 
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
     companion object {
         const val ACCESS_TOKEN = "access_token"
         const val REFRESH_TOKEN = "refresh_token"
@@ -35,14 +38,26 @@ class JwtTokenProvider(
     private val secretKey = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray(StandardCharsets.UTF_8))
 
     fun generateToken(id: String, role: String): TokenResponse {
-        val accessToken = generateAccessToken(id, role, ACCESS_TOKEN, jwtProperties.accessExpiration)
-        val refreshToken = generateRefreshToken(role, REFRESH_TOKEN, jwtProperties.refreshExpiration)
-        
-        refreshTokenRepository.save(
-            RefreshToken(id, refreshToken, jwtProperties.refreshExpiration)
-        )
-        
-        return TokenResponse(accessToken, refreshToken)
+        return try {
+            logger.info("토큰 생성 시작 - User ID: $id, Role: $role")
+            
+            val accessToken = generateAccessToken(id, role, ACCESS_TOKEN, jwtProperties.accessExpiration)
+            val refreshToken = generateRefreshToken(role, REFRESH_TOKEN, jwtProperties.refreshExpiration)
+            
+            logger.info("JWT 토큰 생성 완료 - User ID: $id")
+            logger.info("Redis에 RefreshToken 저장 시도 - User ID: $id")
+            
+            refreshTokenRepository.save(
+                RefreshToken(id, refreshToken, jwtProperties.refreshExpiration)
+            )
+            
+            logger.info("Redis에 RefreshToken 저장 완료 - User ID: $id")
+            
+            TokenResponse(accessToken, refreshToken)
+        } catch (e: Exception) {
+            logger.error("토큰 생성 실패 - User ID: $id", e)
+            throw e
+        }
     }
 
     private fun generateAccessToken(id: String, role: String, type: String, exp: Long): String {
