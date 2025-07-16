@@ -26,7 +26,7 @@ class OAuthSuccessHandler(
         )
 
         val redirectUrl = UriComponentsBuilder
-            .fromUriString("http://localhost:5173/selectSubject")
+            .fromUriString("https://hacker2.parkjoowon.site/oauth/success")
             .queryParam("accessToken", tokenResponse.accessToken)
             .queryParam("refreshToken", tokenResponse.refreshToken)
             .build().toUriString()
