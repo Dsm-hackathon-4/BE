@@ -26,7 +26,7 @@ class OAuthSuccessHandler(
         )
 
         val redirectUrl = UriComponentsBuilder
-            .fromUriString("localhost:5173/oauth/success")
+            .fromUriString("http://localhost:5173/oauth/success")
             .queryParam("accessToken", tokenResponse.accessToken)
             .queryParam("refreshToken", tokenResponse.refreshToken)
             .build().toUriString()
