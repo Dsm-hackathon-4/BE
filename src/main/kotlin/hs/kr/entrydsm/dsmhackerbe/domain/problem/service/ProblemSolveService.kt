@@ -176,27 +176,14 @@ class ProblemSolveService(
     }
     
     private fun getCorrectAnswer(problem: hs.kr.entrydsm.dsmhackerbe.domain.problem.entity.Problem): String? {
-        return when (problem.type) {
-            // 객관식형
-            ProblemType.MULTIPLE_CHOICE, 
-            ProblemType.INITIAL_CHOICE,
-            ProblemType.BLANK_CHOICE,
-            ProblemType.WORD_CHOICE,
-            ProblemType.OX_CHOICE,
-            ProblemType.IMAGE_CHOICE -> {
-                val correctChoice = choiceRepository.findByProblemIdAndIsCorrect(problem.id!!, true)
-                correctChoice?.content
-            }
-            
-            // 주관식형
-            ProblemType.SUBJECTIVE,
-            ProblemType.INITIAL_SUBJECTIVE,
-            ProblemType.BLANK_SUBJECTIVE,
-            ProblemType.WORD_SUBJECTIVE,
-            ProblemType.IMAGE_SUBJECTIVE -> {
-                val correctAnswer = subjectiveAnswerRepository.findByProblemId(problem.id!!)
-                correctAnswer?.correctAnswer
-            }
+        // 먼저 객관식 테이블에서 확인
+        val choiceAnswer = choiceRepository.findByProblemIdAndIsCorrect(problem.id!!, true)?.content
+        if (choiceAnswer != null) {
+            return choiceAnswer
         }
+        
+        // 객관식에 없으면 주관식 테이블에서 확인
+        val subjectiveAnswer = subjectiveAnswerRepository.findByProblemId(problem.id!!)?.correctAnswer
+        return subjectiveAnswer
     }
 }
