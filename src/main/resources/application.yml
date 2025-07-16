@@ -17,12 +17,10 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      username: ${REDIS_USERNAME:default}
-      password: ${REDIS_PASSWORD}
-      ssl:
-        enabled: ${REDIS_SSL:true}
+      url: ${REDIS_URL:rediss://default:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}}
+      lettuce:
+        pool:
+          enabled: true
 
   jackson:
     property-naming-strategy: SNAKE_CASE
