@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.*
 class MyPageController(
     private val myPageService: MyPageService,
     private val userLogoutService: UserLogoutService
-) {
+) : MyPageApiDocument {
 
     @GetMapping
-    fun getMyPage(
+    override fun getMyPage(
         @AuthenticationPrincipal userDetails: UserDetails
     ): ResponseEntity<MyPageResponse> {
         return ResponseEntity.ok(
@@ -28,7 +28,7 @@ class MyPageController(
     }
 
     @PostMapping("/logout")
-    fun logout(): ResponseEntity<Void> {
+    override fun logout(): ResponseEntity<Void> {
         userLogoutService.logout()
         return ResponseEntity.ok().build()
     }

@@ -39,7 +39,7 @@ class RoadmapController(
     }
 
     @GetMapping("/{roadmapId}/chapters")
-    fun getRoadmapChapters(
+    override fun getRoadmapChapters(
         @PathVariable roadmapId: Long,
         @AuthenticationPrincipal userDetails: UserDetails
     ): List<ChapterResponse> {
@@ -47,7 +47,7 @@ class RoadmapController(
     }
 
     @GetMapping("/{roadmapId}/chapters/{chapterId}/problems")
-    fun getChapterProblems(
+    override fun getChapterProblems(
         @PathVariable roadmapId: Long,
         @PathVariable chapterId: Long,
         @AuthenticationPrincipal userDetails: UserDetails

@@ -1,5 +1,6 @@
 package hs.kr.entrydsm.dsmhackerbe.global.document.roadmap
 
+import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.dto.response.ChapterResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.dto.response.RoadmapDetailResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.dto.response.RoadmapResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -47,4 +48,31 @@ interface RoadmapApiDocument {
         @Parameter(description = "로드맵 ID") @PathVariable roadmapId: Long,
         userDetails: UserDetails
     ): RoadmapDetailResponse
+
+    @Operation(summary = "로드맵 챕터 목록 조회", description = "특정 로드맵의 모든 챕터 목록을 조회합니다.")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "챕터 목록 조회 성공"),
+            ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            ApiResponse(responseCode = "404", description = "로드맵을 찾을 수 없음")
+        ]
+    )
+    fun getRoadmapChapters(
+        @Parameter(description = "로드맵 ID") @PathVariable roadmapId: Long,
+        userDetails: UserDetails
+    ): List<ChapterResponse>
+
+    @Operation(summary = "챕터 문제 목록 조회", description = "특정 챕터의 모든 문제 목록을 조회합니다.")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "챕터 문제 목록 조회 성공"),
+            ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            ApiResponse(responseCode = "404", description = "챕터를 찾을 수 없음")
+        ]
+    )
+    fun getChapterProblems(
+        @Parameter(description = "로드맵 ID") @PathVariable roadmapId: Long,
+        @Parameter(description = "챕터 ID") @PathVariable chapterId: Long,
+        userDetails: UserDetails
+    ): List<hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ProblemResponse>
 }

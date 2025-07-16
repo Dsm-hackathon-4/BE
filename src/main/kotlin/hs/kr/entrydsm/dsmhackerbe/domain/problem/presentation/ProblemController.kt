@@ -73,10 +73,9 @@ class ProblemController(
         return userStatsService.getUserStats(userDetails.username)
     }
 
-    // 추가 메서드들 (API Document에 없는 것들)
-    @Operation(summary = "카테고리별 복습 문제 목록", description = "특정 카테고리의 복습 문제들을 조회합니다")
+    // 추가 메서드들
     @GetMapping("/review/category")
-    fun getReviewProblemsByCategory(
+    override fun getReviewProblemsByCategory(
         @RequestParam categoryName: String,
         @AuthenticationPrincipal userDetails: UserDetails,
         @PageableDefault(size = 20) pageable: Pageable
@@ -86,9 +85,8 @@ class ProblemController(
         )
     }
 
-    @Operation(summary = "복습 문제 풀이", description = "복습 문제를 풀고 결과를 확인합니다")
     @PostMapping("/review/{reviewId}/solve")
-    fun solveReviewProblem(
+    override fun solveReviewProblem(
         @PathVariable reviewId: Long,
         @Valid @RequestBody request: SolveProblemRequest,
         @AuthenticationPrincipal userDetails: UserDetails

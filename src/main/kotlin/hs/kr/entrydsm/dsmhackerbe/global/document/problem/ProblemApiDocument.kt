@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
@@ -90,4 +91,33 @@ interface ProblemApiDocument {
         ]
     )
     fun getUserStats(userDetails: UserDetails): UserStatsResponse
+
+    @Operation(summary = "카테고리별 복습 문제 목록", description = "특정 카테고리의 복습 문제들을 조회합니다.")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "카테고리별 복습 문제 목록 조회 성공"),
+            ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            ApiResponse(responseCode = "404", description = "카테고리를 찾을 수 없음")
+        ]
+    )
+    fun getReviewProblemsByCategory(
+        @Parameter(description = "카테고리 이름") @RequestParam categoryName: String,
+        userDetails: UserDetails,
+        @Parameter(description = "페이지 정보") pageable: Pageable
+    ): ResponseEntity<Page<ReviewProblemResponse>>
+
+    @Operation(summary = "복습 문제 풀이", description = "복습 문제를 풀고 결과를 확인합니다.")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "복습 문제 풀이 성공"),
+            ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            ApiResponse(responseCode = "404", description = "복습 문제를 찾을 수 없음")
+        ]
+    )
+    fun solveReviewProblem(
+        @Parameter(description = "복습 ID") @PathVariable reviewId: Long,
+        @Valid @RequestBody request: SolveProblemRequest,
+        userDetails: UserDetails
+    ): ResponseEntity<ReviewSolveResponse>
 }
