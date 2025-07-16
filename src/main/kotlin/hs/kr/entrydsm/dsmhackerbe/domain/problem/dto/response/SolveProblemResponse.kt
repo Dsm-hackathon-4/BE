@@ -7,6 +7,9 @@ data class SolveProblemResponse(
     @Schema(title = "isCorrect: Boolean (정답 여부)", description = "답안이 정답인지 여부", example = "true")
     val isCorrect: Boolean,
     
+    @Schema(title = "correctAnswer: String (정답)", description = "문제의 정답", example = "TCP는 연결지향적이고 신뢰성을 보장합니다.", nullable = true)
+    val correctAnswer: String?,
+    
     @Schema(title = "xpEarned: Int (획득 XP)", description = "이번 문제로 획득한 경험치", example = "15")
     val xpEarned: Int,
     

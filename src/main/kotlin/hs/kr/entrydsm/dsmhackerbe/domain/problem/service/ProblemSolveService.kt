@@ -105,8 +105,12 @@ class ProblemSolveService(
             checkChapterCompletion(user, problem.chapter!!)
         } else null
         
+        // 정답 조회
+        val correctAnswer = getCorrectAnswer(problem)
+        
         return SolveProblemResponse(
             isCorrect = isCorrect,
+            correctAnswer = correctAnswer,
             xpEarned = xpEarned,
             explanation = problem.explanation,
             xpBreakdown = null,
@@ -169,5 +173,30 @@ class ProblemSolveService(
         }
         
         return false
+    }
+    
+    private fun getCorrectAnswer(problem: hs.kr.entrydsm.dsmhackerbe.domain.problem.entity.Problem): String? {
+        return when (problem.type) {
+            // 객관식형
+            ProblemType.MULTIPLE_CHOICE, 
+            ProblemType.INITIAL_CHOICE,
+            ProblemType.BLANK_CHOICE,
+            ProblemType.WORD_CHOICE,
+            ProblemType.OX_CHOICE,
+            ProblemType.IMAGE_CHOICE -> {
+                val correctChoice = choiceRepository.findByProblemIdAndIsCorrect(problem.id!!, true)
+                correctChoice?.content
+            }
+            
+            // 주관식형
+            ProblemType.SUBJECTIVE,
+            ProblemType.INITIAL_SUBJECTIVE,
+            ProblemType.BLANK_SUBJECTIVE,
+            ProblemType.WORD_SUBJECTIVE,
+            ProblemType.IMAGE_SUBJECTIVE -> {
+                val correctAnswer = subjectiveAnswerRepository.findByProblemId(problem.id!!)
+                correctAnswer?.correctAnswer
+            }
+        }
     }
 }

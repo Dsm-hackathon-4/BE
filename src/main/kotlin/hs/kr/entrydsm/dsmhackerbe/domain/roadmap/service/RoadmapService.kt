@@ -92,15 +92,26 @@ class RoadmapService(
     }
     
     fun getRoadmapChapters(roadmapId: Long, userEmail: String): List<ChapterResponse> {
+        println("=== DEBUG: getRoadmapChapters ===")
+        println("roadmapId: $roadmapId, userEmail: $userEmail")
+        
         val user = userRepository.findByEmail(userEmail)
             ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
+        println("user found: ${user.email}")
         
         val roadmap = roadmapRepository.findByIdOrNull(roadmapId)
             ?: throw IllegalArgumentException("로드맵을 찾을 수 없습니다")
+        println("roadmap found: ${roadmap.title}")
         
         val chapters = chapterRepository.findByRoadmapAndIsActiveTrueOrderByOrderIndex(roadmap)
+        println("chapters count: ${chapters.size}")
+        chapters.forEach { chapter ->
+            println("chapter: ${chapter.title}, isActive: ${chapter.isActive}")
+        }
+        
         val userProgress = chapterProgressRepository.findByUserIdAndChapterRoadmapId(user.id!!, roadmapId)
             .associateBy { it.chapter.id }
+        println("userProgress count: ${userProgress.size}")
         
         return chapters.map { chapter ->
             ChapterResponse.from(chapter, userProgress[chapter.id])
