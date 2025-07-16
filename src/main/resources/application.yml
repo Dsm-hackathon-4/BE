@@ -17,8 +17,12 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST:host.docker.internal}
-      port: ${REDIS_PORT:6379}
+      host: ${REDIS_HOST:redis-13768.c340.ap-northeast-2-1.ec2.redns.redis-cloud.com}
+      port: ${REDIS_PORT:13768}
+      username: ${REDIS_USERNAME:default}
+      password: ${REDIS_PASSWORD}
+      ssl:
+        enabled: ${REDIS_SSL:true}
 
   jackson:
     property-naming-strategy: SNAKE_CASE
