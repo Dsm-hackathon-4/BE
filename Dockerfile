@@ -1,6 +1,6 @@
 FROM openjdk:17-jdk
 
-RUN apk update && apk add redis
+RUN apt-get update && apt-get install -y redis-server
 
 ARG JAR_FILE=./build/libs/*.jar
 
