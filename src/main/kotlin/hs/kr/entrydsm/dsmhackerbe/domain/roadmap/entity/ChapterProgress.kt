@@ -3,11 +3,10 @@ package hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity
 import hs.kr.entrydsm.dsmhackerbe.domain.user.entity.User
 import jakarta.persistence.*
 import java.time.LocalDateTime
-import java.util.*
 
 @Entity
-@Table(name = "tbl_roadmap_progress")
-class RoadmapProgress(
+@Table(name = "tbl_chapter_progress")
+class ChapterProgress(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
@@ -16,14 +15,14 @@ class RoadmapProgress(
     val user: User,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "roadmap_id", nullable = false)
-    val roadmap: Roadmap,
+    @JoinColumn(name = "chapter_id", nullable = false)
+    val chapter: Chapter,
 
     @Column(nullable = false)
     var completedProblems: Int = 0,
 
     @Column(nullable = false)
-    val totalProblems: Int = 6, // 고정값: 로드맵당 챕터 6개
+    val totalProblems: Int = 10, // 챕터당 문제 10개
 
     @Column(nullable = false)
     var isCompleted: Boolean = false,
@@ -36,7 +35,7 @@ class RoadmapProgress(
 ) {
     fun addProgress() {
         completedProblems++
-        // 6개 챕터를 모두 완료하면 로드맵 완료
+        // 10문제를 모두 풀면 챕터 완료 (정답 여부 상관없이)
         if (completedProblems >= totalProblems && !isCompleted) {
             isCompleted = true
             completedAt = LocalDateTime.now()

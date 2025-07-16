@@ -20,6 +20,10 @@ interface ProblemRepository : JpaRepository<Problem, Long> {
     fun findByRoadmapOrderByDifficultyAscIdAsc(roadmap: Roadmap): List<Problem>
     fun findByRoadmapAndDifficulty(roadmap: Roadmap, difficulty: Difficulty): List<Problem>
     
+    // 챕터 관련 메서드
+    fun findByChapterOrderByIdAsc(chapter: hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Chapter): List<Problem>
+    fun findByChapterAndDifficulty(chapter: hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Chapter, difficulty: Difficulty): List<Problem>
+    
     @Query("SELECT p FROM Problem p WHERE p.category = :category AND p.difficulty = :difficulty AND p.type = :type")
     fun findByCategoryAndDifficultyAndType(
         category: Category, 

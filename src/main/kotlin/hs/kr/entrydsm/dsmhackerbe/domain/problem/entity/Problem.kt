@@ -17,6 +17,10 @@ class Problem(
     @JoinColumn(name = "roadmap_id")
     val roadmap: Roadmap? = null,
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chapter_id")
+    val chapter: hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Chapter? = null,
+
     @Column(nullable = false)
     val title: String,
 
@@ -34,7 +38,7 @@ class Problem(
     @Column(nullable = false)
     val xpReward: Int,
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     val explanation: String? = null,
 
     @Column

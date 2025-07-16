@@ -13,21 +13,6 @@ class UserGoalService(
     private val userRepository: UserRepository
 ) {
     
-    fun setDailyGoal(userEmail: String, dailyGoal: Int) {
-        val user = userRepository.findByEmail(userEmail)
-            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
-        
-        var goal = userGoalRepository.findByUserId(user.id!!)
-        
-        if (goal == null) {
-            goal = UserGoal(userId = user.id!!, dailyGoal = dailyGoal)
-        } else {
-            goal.updateGoal(dailyGoal)
-        }
-        
-        userGoalRepository.save(goal)
-    }
-    
     fun addProblemProgress(userEmail: String) {
         val user = userRepository.findByEmail(userEmail)
             ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
@@ -37,17 +22,13 @@ class UserGoalService(
         if (goal == null) {
             // 새 사용자의 경우 현재 풀이 + 3으로 목표 설정
             goal = UserGoal(userId = user.id!!, dailyGoal = 4) // 1 + 3
-            userGoalRepository.save(goal)
-        }
-        
-        goal.addProgress()
-        
-        // 현재 풀이 기준 + 3으로 목표 자동 조정
-        val newGoal = goal.todayProgress + 3
-        if (newGoal != goal.dailyGoal) {
+        } else {
+            // 현재 풀이 기준 + 3으로 목표 자동 조정
+            val newGoal = goal.todayProgress + 1 + 3 // 현재 진행도 + 이번 풀이 + 3
             goal.updateGoal(newGoal)
         }
         
+        goal.addProgress()
         userGoalRepository.save(goal)
     }
     

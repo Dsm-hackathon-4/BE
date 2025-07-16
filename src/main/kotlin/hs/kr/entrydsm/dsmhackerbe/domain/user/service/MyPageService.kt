@@ -169,9 +169,4 @@ class MyPageService(
             streak = goal.currentStreak
         )
     }
-    
-    @Transactional
-    fun setDailyGoal(userEmail: String, dailyGoal: Int) {
-        userGoalService.setDailyGoal(userEmail, dailyGoal)
-    }
 }

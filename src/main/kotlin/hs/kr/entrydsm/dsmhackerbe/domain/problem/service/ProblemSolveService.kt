@@ -1,5 +1,6 @@
 package hs.kr.entrydsm.dsmhackerbe.domain.problem.service
 
+import hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ChapterCompleteInfo
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.SolveProblemResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.entity.ProblemType
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.entity.UserProblemHistory
@@ -8,6 +9,7 @@ import hs.kr.entrydsm.dsmhackerbe.domain.problem.repository.ProblemRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.repository.SubjectiveAnswerRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.repository.UserProblemHistoryRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.rank.service.RankingService
+import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.service.ChapterProgressService
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.service.RoadmapProgressService
 import hs.kr.entrydsm.dsmhackerbe.domain.user.repository.UserRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.user.service.StudyStreakService
@@ -28,7 +30,8 @@ class ProblemSolveService(
     private val studyStreakService: StudyStreakService,
     private val rankingService: RankingService,
     private val userGoalService: UserGoalService,
-    private val roadmapProgressService: RoadmapProgressService
+    private val roadmapProgressService: RoadmapProgressService,
+    private val chapterProgressService: ChapterProgressService
 ) {
     
     fun solveProblem(problemId: Long, userAnswer: String, userEmail: String): SolveProblemResponse {
@@ -91,16 +94,54 @@ class ProblemSolveService(
         // 목표 진행도 업데이트 (문제를 풀 때마다)
         userGoalService.addProblemProgress(userEmail)
         
-        // 로드맵 진행도 업데이트 (정답일 때만) ← 새로 추가된 부분!
-        if (isCorrect) {
-            roadmapProgressService.updateRoadmapProgress(userEmail, problem)
-        }
+        // 챕터 진행도 업데이트 (정답 여부 상관없이)
+        chapterProgressService.updateChapterProgress(userEmail, problem)
+        
+        // 로드맵 진행도 업데이트 (챕터 완료 시)
+        roadmapProgressService.updateRoadmapProgress(userEmail, problem)
+        
+        // 챕터 완료 여부 확인
+        val chapterCompleteInfo = if (problem.chapter != null) {
+            checkChapterCompletion(user, problem.chapter!!)
+        } else null
         
         return SolveProblemResponse(
             isCorrect = isCorrect,
             xpEarned = xpEarned,
             explanation = problem.explanation,
-            xpBreakdown = null
+            xpBreakdown = null,
+            chapterComplete = chapterCompleteInfo
+        )
+    }
+    
+    private fun checkChapterCompletion(user: hs.kr.entrydsm.dsmhackerbe.domain.user.entity.User, chapter: hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Chapter): ChapterCompleteInfo? {
+        // 챕터의 모든 문제 조회
+        val chapterProblems = problemRepository.findByChapterOrderByIdAsc(chapter)
+        if (chapterProblems.size != 10) return null // 챕터가 10문제가 아니면 무시
+        
+        // 해당 챕터의 사용자 풀이 기록 조회
+        val chapterHistory = userProblemHistoryRepository.findByUserOrderBySolvedAtDesc(user)
+            .filter { it.problem.chapter?.id == chapter.id }
+        
+        // 10문제를 모두 풀었는지 확인
+        val solvedProblemIds = chapterHistory.map { it.problem.id }.toSet()
+        val allProblemIds = chapterProblems.map { it.id }.toSet()
+        
+        if (solvedProblemIds != allProblemIds) return null // 아직 다 못 품
+        
+        // 챕터별 통계 계산
+        val totalXp = chapterHistory.sumOf { it.xpEarned }
+        val correctCount = chapterHistory.count { it.isCorrect }
+        val totalCount = chapterHistory.size
+        val accuracyRate = if (totalCount > 0) (correctCount * 100) / totalCount else 0
+        
+        return ChapterCompleteInfo(
+            isChapterCompleted = true,
+            chapterTitle = chapter.title,
+            totalXp = totalXp,
+            correctCount = correctCount,
+            totalCount = totalCount,
+            accuracyRate = accuracyRate
         )
     }
     

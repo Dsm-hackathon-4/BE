@@ -7,10 +7,13 @@ import hs.kr.entrydsm.dsmhackerbe.domain.problem.entity.ProblemType
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.repository.CategoryRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.repository.ChoiceRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.repository.ProblemRepository
+import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.dto.response.ChapterResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.dto.response.RoadmapDetailResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.dto.response.RoadmapProblems
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.dto.response.RoadmapResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.RoadmapProgress
+import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.repository.ChapterProgressRepository
+import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.repository.ChapterRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.repository.RoadmapProgressRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.repository.RoadmapRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.user.repository.UserRepository
@@ -23,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional
 class RoadmapService(
     private val roadmapRepository: RoadmapRepository,
     private val roadmapProgressRepository: RoadmapProgressRepository,
+    private val chapterRepository: ChapterRepository,
+    private val chapterProgressRepository: ChapterProgressRepository,
     private val problemRepository: ProblemRepository,
     private val choiceRepository: ChoiceRepository,
     private val userRepository: UserRepository,
@@ -84,6 +89,36 @@ class RoadmapService(
         )
         
         return RoadmapDetailResponse(roadmapResponse, problems)
+    }
+    
+    fun getRoadmapChapters(roadmapId: Long, userEmail: String): List<ChapterResponse> {
+        val user = userRepository.findByEmail(userEmail)
+            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
+        
+        val roadmap = roadmapRepository.findByIdOrNull(roadmapId)
+            ?: throw IllegalArgumentException("로드맵을 찾을 수 없습니다")
+        
+        val chapters = chapterRepository.findByRoadmapAndIsActiveTrueOrderByOrderIndex(roadmap)
+        val userProgress = chapterProgressRepository.findByUserIdAndChapterRoadmapId(user.id!!, roadmapId)
+            .associateBy { it.chapter.id }
+        
+        return chapters.map { chapter ->
+            ChapterResponse.from(chapter, userProgress[chapter.id])
+        }
+    }
+    
+    fun getChapterProblems(chapterId: Long, userEmail: String): List<ProblemResponse> {
+        val user = userRepository.findByEmail(userEmail)
+            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
+        
+        val chapter = chapterRepository.findByIdOrNull(chapterId)
+            ?: throw IllegalArgumentException("챕터를 찾을 수 없습니다")
+        
+        val problems = problemRepository.findByChapterOrderByIdAsc(chapter)
+        
+        return problems.map { problem ->
+            toProblemResponse(problem)
+        }
     }
     
     private fun toProblemResponse(problem: hs.kr.entrydsm.dsmhackerbe.domain.problem.entity.Problem): ProblemResponse {

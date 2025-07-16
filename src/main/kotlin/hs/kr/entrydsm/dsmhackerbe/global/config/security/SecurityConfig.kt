@@ -32,6 +32,7 @@ class SecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         return http
             .csrf { it.disable() }
+            .cors { it.disable() }
             .formLogin { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .headers { 
@@ -60,9 +61,10 @@ class SecurityConfig(
             
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/oauth2/authorization/google", "/login/oauth2/code/google").permitAll()
+                    .requestMatchers("/oauth2/authorization/google", "/login/oauth2/code/google/**").permitAll()
                     .requestMatchers("/oauth2/authorization/kakao", "/login/oauth2/code/kakao").permitAll()
                     .requestMatchers("/users/login", "/users/register", "/users/reissue").permitAll()
+                    .requestMatchers("/").permitAll()
                     .requestMatchers("/oauth/success/**").permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
                     .anyRequest().authenticated()

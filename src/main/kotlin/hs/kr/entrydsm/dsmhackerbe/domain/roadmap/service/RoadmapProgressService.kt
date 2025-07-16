@@ -2,6 +2,7 @@ package hs.kr.entrydsm.dsmhackerbe.domain.roadmap.service
 
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.entity.Problem
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.RoadmapProgress
+import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.repository.ChapterProgressRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.repository.RoadmapProgressRepository
 import hs.kr.entrydsm.dsmhackerbe.domain.user.repository.UserRepository
 import org.springframework.stereotype.Service
@@ -11,12 +12,14 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class RoadmapProgressService(
     private val roadmapProgressRepository: RoadmapProgressRepository,
+    private val chapterProgressRepository: ChapterProgressRepository,
     private val userRepository: UserRepository
 ) {
     
     fun updateRoadmapProgress(userEmail: String, problem: Problem) {
-        // 로드맵에 속한 문제가 아니면 무시
-        val roadmap = problem.roadmap ?: return
+        // 챕터에 속한 문제가 아니면 무시
+        val chapter = problem.chapter ?: return
+        val roadmap = chapter.roadmap
         
         val user = userRepository.findByEmail(userEmail)
             ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
@@ -37,7 +40,20 @@ class RoadmapProgressService(
             return
         }
         
-        progress.addProgress()
-        roadmapProgressRepository.save(progress)
+        // 해당 챕터가 완료되었는지 확인
+        val chapterProgress = chapterProgressRepository.findByUserAndChapter(user, chapter)
+        if (chapterProgress?.isCompleted == true) {
+            // 챕터가 완료되었다면 로드맵 진행도 증가
+            val completedChapters = chapterProgressRepository.findByUserIdAndChapterRoadmapId(user.id!!, roadmap.id!!)
+                .count { it.isCompleted }
+            
+            // 완료된 챕터 수로 진행도 업데이트
+            progress.completedProblems = completedChapters
+            if (completedChapters >= 6 && !progress.isCompleted) {
+                progress.isCompleted = true
+                progress.completedAt = java.time.LocalDateTime.now()
+            }
+            roadmapProgressRepository.save(progress)
+        }
     }
 }

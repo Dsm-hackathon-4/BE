@@ -1,0 +1,29 @@
+### 1. 로그인 (Google OAuth)
+# 먼저 브라우저에서 http://localhost:8080/oauth2/authorization/google 접속하여 로그인
+
+### 2. 전체 로드맵 조회
+GET http://localhost:8080/api/roadmaps
+Authorization: Bearer {{accessToken}}
+
+### 3. 특정 로드맵의 챕터들 조회
+GET http://localhost:8080/api/roadmaps/1/chapters
+Authorization: Bearer {{accessToken}}
+
+### 4. 특정 챕터의 문제들 조회
+GET http://localhost:8080/api/roadmaps/1/chapters/1/problems
+Authorization: Bearer {{accessToken}}
+
+### 5. 문제 풀이
+POST http://localhost:8080/api/problems/1/solve
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userAnswer": "1"
+}
+
+### 6. 사용자 마이페이지 조회
+GET http://localhost:8080/api/mypage
+Authorization: Bearer {{accessToken}}
+
+### 변수 설정 (OAuth 로그인 후 받은 토큰으로 교

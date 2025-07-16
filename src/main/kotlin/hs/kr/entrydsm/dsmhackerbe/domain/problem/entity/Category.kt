@@ -14,6 +14,9 @@ class Category(
     @Column(nullable = false)
     val description: String,
 
-    @Column(nullable = false)
-    val iconUrl: String? = null
+    @Column(nullable = true)
+    val iconUrl: String? = null,
+    
+    @Column(nullable = true)
+    val color: String? = null
 )

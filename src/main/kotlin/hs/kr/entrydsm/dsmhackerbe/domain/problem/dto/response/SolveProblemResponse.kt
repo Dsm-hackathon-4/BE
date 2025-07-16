@@ -14,7 +14,31 @@ data class SolveProblemResponse(
     val explanation: String?,
     
     @Schema(title = "xpBreakdown: XpBreakdown (XP 세부내역)", description = "XP 획득 상세 내역", nullable = true)
-    val xpBreakdown: XpBreakdown?
+    val xpBreakdown: XpBreakdown?,
+    
+    @Schema(title = "chapterComplete: ChapterCompleteInfo (챕터 완료 정보)", description = "챕터 완료시에만 포함되는 통계", nullable = true)
+    val chapterComplete: ChapterCompleteInfo?
+)
+
+@Schema(description = "챕터 완료 시 통계 정보")
+data class ChapterCompleteInfo(
+    @Schema(title = "isChapterCompleted: Boolean (챕터 완료 여부)", description = "이번 문제로 챕터가 완료되었는지", example = "true")
+    val isChapterCompleted: Boolean,
+    
+    @Schema(title = "chapterTitle: String (챕터 제목)", description = "완료된 챕터 제목", example = "SQL 기초")
+    val chapterTitle: String,
+    
+    @Schema(title = "totalXp: Int (챕터 총 XP)", description = "이 챕터에서 획득한 총 경험치", example = "180")
+    val totalXp: Int,
+    
+    @Schema(title = "correctCount: Int (정답 수)", description = "이 챕터에서 맞춘 문제 수", example = "9")
+    val correctCount: Int,
+    
+    @Schema(title = "totalCount: Int (전체 문제 수)", description = "이 챕터의 전체 문제 수 (항상 10)", example = "10")
+    val totalCount: Int,
+    
+    @Schema(title = "accuracyRate: Int (정답률)", description = "이 챕터의 정답률 퍼센트", example = "90")
+    val accuracyRate: Int
 )
 
 @Schema(description = "XP 획득 세부 내역")

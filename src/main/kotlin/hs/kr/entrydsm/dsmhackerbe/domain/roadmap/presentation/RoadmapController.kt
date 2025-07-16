@@ -1,5 +1,6 @@
 package hs.kr.entrydsm.dsmhackerbe.domain.roadmap.presentation
 
+import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.dto.response.ChapterResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.dto.response.RoadmapDetailResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.dto.response.RoadmapResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.roadmap.service.RoadmapService
@@ -35,5 +36,22 @@ class RoadmapController(
         @AuthenticationPrincipal userDetails: UserDetails
     ): RoadmapDetailResponse {
         return roadmapService.getRoadmapDetail(roadmapId, userDetails.username)
+    }
+
+    @GetMapping("/{roadmapId}/chapters")
+    fun getRoadmapChapters(
+        @PathVariable roadmapId: Long,
+        @AuthenticationPrincipal userDetails: UserDetails
+    ): List<ChapterResponse> {
+        return roadmapService.getRoadmapChapters(roadmapId, userDetails.username)
+    }
+
+    @GetMapping("/{roadmapId}/chapters/{chapterId}/problems")
+    fun getChapterProblems(
+        @PathVariable roadmapId: Long,
+        @PathVariable chapterId: Long,
+        @AuthenticationPrincipal userDetails: UserDetails
+    ): List<hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ProblemResponse> {
+        return roadmapService.getChapterProblems(chapterId, userDetails.username)
     }
 }

@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.*
 class MyPageController(
     private val myPageService: MyPageService,
     private val userLogoutService: UserLogoutService
-) : MyPageApiDocument {
+) {
 
     @GetMapping
-    override fun getMyPage(
+    fun getMyPage(
         @AuthenticationPrincipal userDetails: UserDetails
     ): ResponseEntity<MyPageResponse> {
         return ResponseEntity.ok(
@@ -27,17 +27,8 @@ class MyPageController(
         )
     }
 
-    @PutMapping("/goal")
-    override fun setDailyGoal(
-        @Valid @RequestBody request: SetGoalRequest,
-        @AuthenticationPrincipal userDetails: UserDetails
-    ): ResponseEntity<Void> {
-        myPageService.setDailyGoal(userDetails.username, request.dailyGoal)
-        return ResponseEntity.ok().build()
-    }
-
     @PostMapping("/logout")
-    override fun logout(): ResponseEntity<Void> {
+    fun logout(): ResponseEntity<Void> {
         userLogoutService.logout()
         return ResponseEntity.ok().build()
     }
