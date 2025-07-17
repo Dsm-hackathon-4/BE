@@ -131,14 +131,15 @@ class ProblemSolveService(
     }
     
     private fun checkChapterCompletion(user: hs.kr.entrydsm.dsmhackerbe.domain.user.entity.User, chapter: hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Chapter): ChapterCompleteInfo? {
-        // ChapterProgress에서 이번에 완료되었는지 확인
+        // ChapterProgress에서 10문제 완료 체크
         val chapterProgress = chapterProgressService.getChapterProgress(user, chapter)
         
-        // 이번 문제 풀이로 인해 방금 완료된 경우만 반환
-        if (chapterProgress?.isCompleted == true && chapterProgress.completedProblems == 10) {
-            // 해당 챕터의 사용자 풀이 기록 조회
+        // 10문제씩 완료했을 때 (10, 20, 30, ... 마다)
+        if (chapterProgress?.isCompleted == true && chapterProgress.completedProblems % 10 == 0) {
+            // 해당 챕터의 사용자 풀이 기록 조회 (최근 10개)
             val chapterHistory = userProblemHistoryRepository.findByUserOrderBySolvedAtDesc(user)
                 .filter { it.problem.chapter?.id == chapter.id }
+                .take(10) // 최근 10개만
             
             // 챕터별 통계 계산
             val totalXp = chapterHistory.sumOf { it.xpEarned }

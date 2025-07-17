@@ -35,10 +35,13 @@ class ChapterProgress(
 ) {
     fun addProgress() {
         completedProblems++
-        // 10문제를 모두 풀면 챕터 완료 (정답 여부 상관없이)
-        if (completedProblems >= totalProblems && !isCompleted) {
+        // 10문제를 풀 때마다 완료 처리 (10, 20, 30, ... 마다)
+        if (completedProblems % 10 == 0) {
             isCompleted = true
             completedAt = LocalDateTime.now()
+        } else {
+            isCompleted = false
+            completedAt = null
         }
     }
 

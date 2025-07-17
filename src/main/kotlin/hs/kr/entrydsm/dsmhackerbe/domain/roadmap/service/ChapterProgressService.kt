@@ -29,15 +29,9 @@ class ChapterProgressService(
                 user = user,
                 chapter = chapter
             )
-            chapterProgressRepository.save(progress)
         }
         
-        // 이미 완료된 챕터면 더 이상 진행도 업데이트 안함
-        if (progress.isCompleted) {
-            return
-        }
-        
-        // 정답 여부 상관없이 문제를 풀었으면 진행도 증가
+        // 매번 문제 풀 때마다 카운트 증가
         progress.addProgress()
         chapterProgressRepository.save(progress)
     }
