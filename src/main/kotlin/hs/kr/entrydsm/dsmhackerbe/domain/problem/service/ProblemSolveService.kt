@@ -103,7 +103,7 @@ class ProblemSolveService(
         // 목표 진행도 업데이트 (문제를 풀 때마다)
         userGoalService.addProblemProgress(userEmail)
         
-        // 챕터 진행도 업데이트 (정답 여부 상관없이)
+        // 챕터 진행도 업데이트 (정답 여부 상관없이, 중복 상관없이)
         chapterProgressService.updateChapterProgress(userEmail, problem)
         
         // 챕터 완료 여부 확인 (진행도 업데이트 후에 체크)

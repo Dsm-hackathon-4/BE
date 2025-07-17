@@ -31,7 +31,7 @@ class ChapterProgressService(
             )
         }
         
-        // 매번 문제 풀 때마다 카운트 증가
+        // 문제를 풀 때마다 무조건 카운트 증가 (정답/오답, 중복 상관없이)
         progress.addProgress()
         chapterProgressRepository.save(progress)
     }
