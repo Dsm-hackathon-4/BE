@@ -101,10 +101,16 @@ class AiProblemService(
         
         val allAiProblems = aiGeneratedProblemRepository.findByUserOrderByCreatedAtDesc(user)
         
-        // 최근 24시간 이내에 생성된 문제를 "새로 생성된" 것으로 간주
-        val yesterday = java.time.LocalDateTime.now().minusDays(1)
-        val newProblems = allAiProblems.filter { it.createdAt.isAfter(yesterday) }
-        val ongoingProblems = allAiProblems.filter { it.createdAt.isBefore(yesterday) }
+        // 풀이 기록이 있는 문제들 조회
+        val solvedProblemIds = aiProblemHistoryRepository.findByUserOrderBySolvedAtDesc(user)
+            .map { it.aiProblem.id }
+            .toSet()
+        
+        // 새로운 복습: 아직 풀지 않은 문제
+        val newProblems = allAiProblems.filter { it.id !in solvedProblemIds }
+        
+        // 진행 중인 복습: 이미 푼 문제
+        val ongoingProblems = allAiProblems.filter { it.id in solvedProblemIds }
         
         return hs.kr.entrydsm.dsmhackerbe.domain.integration.dto.response.AiReviewSummaryResponse(
             newReviewCount = newProblems.size,
