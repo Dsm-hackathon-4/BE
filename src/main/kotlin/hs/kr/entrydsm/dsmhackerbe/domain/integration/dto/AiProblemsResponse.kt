@@ -8,5 +8,6 @@ data class AiProblem(
     val type: String,
     val text: String,
     val choices: List<String>? = null,
+    val correctChoice: String? = null,
     val correctAnswer: String? = null
 )

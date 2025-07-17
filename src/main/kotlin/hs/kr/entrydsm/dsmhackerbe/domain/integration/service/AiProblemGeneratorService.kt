@@ -85,13 +85,20 @@ class AiProblemGeneratorService(
                 else -> continue
             }
             
+            val correctAnswer = when (problemType) {
+                hs.kr.entrydsm.dsmhackerbe.domain.integration.entity.AiProblemType.FILL_BLANK -> extractAnswerFromBlank(aiProblem.text)
+                hs.kr.entrydsm.dsmhackerbe.domain.integration.entity.AiProblemType.CHOICE -> aiProblem.correctChoice
+                hs.kr.entrydsm.dsmhackerbe.domain.integration.entity.AiProblemType.ANSWER -> aiProblem.correctAnswer
+                else -> null
+            }
+            
             val problem = hs.kr.entrydsm.dsmhackerbe.domain.integration.entity.AiGeneratedProblem(
                 user = user,
                 batch = batch,
                 problemType = problemType,
                 content = aiProblem.text,
                 choices = aiProblem.choices?.let { com.fasterxml.jackson.module.kotlin.jacksonObjectMapper().writeValueAsString(it) },
-                correctAnswer = aiProblem.correctAnswer ?: extractAnswerFromBlank(aiProblem.text),
+                correctAnswer = correctAnswer ?: "",
                 difficulty = 10
             )
             
