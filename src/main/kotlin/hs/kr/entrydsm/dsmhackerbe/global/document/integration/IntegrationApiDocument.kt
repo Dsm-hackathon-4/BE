@@ -82,4 +82,13 @@ interface IntegrationApiDocument {
         @Valid @RequestBody request: SolveAiProblemRequest,
         userDetails: UserDetails
     ): ResponseEntity<SolveAiProblemResponse>
+
+    @Operation(summary = "AI 문제 복습 요약 정보 조회", description = "새로 생성된 AI 문제와 진행 중인 AI 문제의 개수를 조회합니다.")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "AI 복습 요약 정보 조회 성공"),
+            ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+        ]
+    )
+    fun getAiReviewSummary(userDetails: UserDetails): ResponseEntity<hs.kr.entrydsm.dsmhackerbe.domain.integration.dto.response.AiReviewSummaryResponse>
 }

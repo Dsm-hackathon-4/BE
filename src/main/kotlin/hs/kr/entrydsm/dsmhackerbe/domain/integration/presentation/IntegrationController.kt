@@ -66,4 +66,12 @@ class IntegrationController(
         val result = aiProblemService.solveAiProblem(problemId, request.answer, userDetails.username)
         return ResponseEntity.ok(result)
     }
+    
+    @GetMapping("/ai-review/summary")
+    override fun getAiReviewSummary(
+        @AuthenticationPrincipal userDetails: UserDetails
+    ): ResponseEntity<hs.kr.entrydsm.dsmhackerbe.domain.integration.dto.response.AiReviewSummaryResponse> {
+        val summary = aiProblemService.getAiReviewSummary(userDetails.username)
+        return ResponseEntity.ok(summary)
+    }
 }

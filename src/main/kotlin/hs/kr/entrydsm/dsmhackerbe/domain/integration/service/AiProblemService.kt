@@ -95,6 +95,24 @@ class AiProblemService(
         )
     }
     
+    fun getAiReviewSummary(userEmail: String): hs.kr.entrydsm.dsmhackerbe.domain.integration.dto.response.AiReviewSummaryResponse {
+        val user = userRepository.findByEmail(userEmail)
+            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
+        
+        val allAiProblems = aiGeneratedProblemRepository.findByUserOrderByCreatedAtDesc(user)
+        
+        // 최근 24시간 이내에 생성된 문제를 "새로 생성된" 것으로 간주
+        val yesterday = java.time.LocalDateTime.now().minusDays(1)
+        val newProblems = allAiProblems.filter { it.createdAt.isAfter(yesterday) }
+        val ongoingProblems = allAiProblems.filter { it.createdAt.isBefore(yesterday) }
+        
+        return hs.kr.entrydsm.dsmhackerbe.domain.integration.dto.response.AiReviewSummaryResponse(
+            newReviewCount = newProblems.size,
+            ongoingReviewCount = ongoingProblems.size,
+            totalReviewCount = allAiProblems.size
+        )
+    }
+    
     private fun checkAnswer(problem: hs.kr.entrydsm.dsmhackerbe.domain.integration.entity.AiGeneratedProblem, userAnswer: String): Boolean {
         val correctAnswer = problem.correctAnswer ?: return false
         val userAnswerNormalized = userAnswer.trim().lowercase()

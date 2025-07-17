@@ -72,14 +72,6 @@ class ProblemController(
     ): UserStatsResponse {
         return userStatsService.getUserStats(userDetails.username)
     }
-    
-    @GetMapping("/review/summary")
-    override fun getReviewSummary(
-        @AuthenticationPrincipal userDetails: UserDetails
-    ): ResponseEntity<ReviewSummaryResponse> {
-        val summary = reviewService.getReviewSummary(userDetails.username)
-        return ResponseEntity.ok(summary)
-    }
 
     // 추가 메서드들
     @GetMapping("/review/category")
