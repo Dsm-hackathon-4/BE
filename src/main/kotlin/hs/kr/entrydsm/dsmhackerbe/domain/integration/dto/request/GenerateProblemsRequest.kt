@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank
 
 @Schema(description = "AI 문제 생성 요청")
 data class GenerateProblemsRequest(
-    @field:NotBlank(message = "사용자 ID는 필수입니다")
-    @Schema(description = "AI 서버에 전달할 사용자 ID", example = "user123", required = true)
+    @field:NotBlank(message = "사용자 식별자는 필수입니다")
+    @Schema(description = "AI 서버에 전달할 사용자 식별자 (email 또는 userId)", example = "user@example.com", required = true)
     val userId: String
 )

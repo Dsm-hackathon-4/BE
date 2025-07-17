@@ -3,6 +3,7 @@ package hs.kr.entrydsm.dsmhackerbe.domain.problem.service
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ChoiceResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ReviewProblemResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ReviewSolveResponse
+import hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ReviewSummaryResponse
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.entity.ProblemType
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.entity.ReviewHistory
 import hs.kr.entrydsm.dsmhackerbe.domain.problem.entity.ReviewProblem
@@ -215,7 +216,7 @@ class ReviewService(
     }
     
     @Transactional(readOnly = true)
-    fun getReviewSummary(userEmail: String): hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ReviewSummaryResponse {
+    fun getReviewSummary(userEmail: String): ReviewSummaryResponse {
         val user = userRepository.findByEmail(userEmail)
             ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
         
@@ -226,7 +227,7 @@ class ReviewService(
         val newReviews = allReviews.filter { it.addedAt.isAfter(yesterday) }
         val ongoingReviews = allReviews.filter { it.addedAt.isBefore(yesterday) }
         
-        return hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ReviewSummaryResponse(
+        return ReviewSummaryResponse(
             newReviewCount = newReviews.size,
             ongoingReviewCount = ongoingReviews.size,
             totalReviewCount = allReviews.size

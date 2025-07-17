@@ -99,7 +99,7 @@ interface ProblemApiDocument {
             ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
         ]
     )
-    fun getReviewSummary(userDetails: UserDetails): ResponseEntity<hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ReviewSummaryResponse>
+    fun getReviewSummary(userDetails: UserDetails): ResponseEntity<ReviewSummaryResponse>
 
     @Operation(summary = "카테고리별 복습 문제 목록", description = "특정 카테고리의 복습 문제들을 조회합니다.")
     @ApiResponses(

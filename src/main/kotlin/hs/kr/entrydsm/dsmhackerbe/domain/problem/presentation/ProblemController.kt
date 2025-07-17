@@ -76,7 +76,7 @@ class ProblemController(
     @GetMapping("/review/summary")
     override fun getReviewSummary(
         @AuthenticationPrincipal userDetails: UserDetails
-    ): ResponseEntity<hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ReviewSummaryResponse> {
+    ): ResponseEntity<ReviewSummaryResponse> {
         val summary = reviewService.getReviewSummary(userDetails.username)
         return ResponseEntity.ok(summary)
     }
