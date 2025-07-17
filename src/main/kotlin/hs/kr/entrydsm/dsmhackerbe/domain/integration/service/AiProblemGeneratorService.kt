@@ -87,8 +87,8 @@ class AiProblemGeneratorService(
             
             val correctAnswer = when (problemType) {
                 hs.kr.entrydsm.dsmhackerbe.domain.integration.entity.AiProblemType.FILL_BLANK -> extractAnswerFromBlank(aiProblem.text)
-                hs.kr.entrydsm.dsmhackerbe.domain.integration.entity.AiProblemType.CHOICE -> aiProblem.correctChoice
-                hs.kr.entrydsm.dsmhackerbe.domain.integration.entity.AiProblemType.ANSWER -> aiProblem.correctAnswer
+                hs.kr.entrydsm.dsmhackerbe.domain.integration.entity.AiProblemType.CHOICE -> aiProblem.correct_choice
+                hs.kr.entrydsm.dsmhackerbe.domain.integration.entity.AiProblemType.ANSWER -> aiProblem.correct_answer
                 else -> null
             }
             
