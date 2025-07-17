@@ -53,7 +53,7 @@ class AiProblemGeneratorService(
     }
     
     private fun requestProblemsFromAi(userId: String): AiProblemsResponse {
-        val url = "$aiServerBaseUrl/summary/testtest"
+        val url = "$aiServerBaseUrl/summary/$userId"
         
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
