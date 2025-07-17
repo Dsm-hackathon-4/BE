@@ -65,20 +65,18 @@ class MyPageService(
     }
     
     private fun getUserStatistics(userId: java.util.UUID, userEmail: String): UserStatisticsResponse {
-        val totalXp = userProblemHistoryRepository.getTotalXpByUser(
-            userRepository.findById(userId).get()
-        ) ?: 0
+        val user = userRepository.findById(userId).get()
+        val totalXp = user.totalXp
         
         val studyStreak = studyStreakService.getStudyStreak(userEmail)
         
-        // 랭킹 정보 (임시로 1등으로 설정, 실제로는 랭킹 계산 필요)
-        val dailyRank = 1
-        val weeklyRank = 1
-        val monthlyRank = 1
+        // 실제 랭킹 계산 - 총 XP 기준
+        val allUsers = userRepository.findAll()
+        val myRank = allUsers.count { otherUser ->
+            otherUser.totalXp > user.totalXp
+        } + 1
         
-        val allHistory = userProblemHistoryRepository.findByUserOrderBySolvedAtDesc(
-            userRepository.findById(userId).get()
-        )
+        val allHistory = userProblemHistoryRepository.findByUserOrderBySolvedAtDesc(user)
         val totalProblems = allHistory.size
         val correctProblems = allHistory.count { it.isCorrect }
         val accuracy = if (totalProblems > 0) (correctProblems * 100) / totalProblems else 0
@@ -86,9 +84,9 @@ class MyPageService(
         return UserStatisticsResponse(
             totalXp = totalXp,
             currentStreak = studyStreak.currentStreak,
-            dailyRank = dailyRank,
-            weeklyRank = weeklyRank,
-            monthlyRank = monthlyRank,
+            dailyRank = myRank,
+            weeklyRank = myRank,
+            monthlyRank = myRank,
             totalProblems = totalProblems,
             correctProblems = correctProblems,
             accuracy = accuracy
@@ -96,9 +94,8 @@ class MyPageService(
     }
     
     private fun getXpInfo(userId: java.util.UUID): XpInfoResponse {
-        val totalXp = userProblemHistoryRepository.getTotalXpByUser(
-            userRepository.findById(userId).get()
-        ) ?: 0
+        val user = userRepository.findById(userId).get()
+        val totalXp = user.totalXp
         
         val today = LocalDate.now()
         val weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
