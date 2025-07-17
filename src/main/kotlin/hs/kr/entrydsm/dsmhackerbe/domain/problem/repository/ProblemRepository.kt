@@ -23,6 +23,7 @@ interface ProblemRepository : JpaRepository<Problem, Long> {
     // 챕터 관련 메서드
     fun findByChapterOrderByIdAsc(chapter: hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Chapter): List<Problem>
     fun findByChapterAndDifficulty(chapter: hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Chapter, difficulty: Difficulty): List<Problem>
+    fun countByChapter(chapter: hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Chapter): Int
     
     @Query("SELECT p FROM Problem p WHERE p.category = :category AND p.difficulty = :difficulty AND p.type = :type")
     fun findByCategoryAndDifficultyAndType(

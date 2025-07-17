@@ -35,7 +35,7 @@ class ChapterProgress(
 ) {
     fun addProgress() {
         completedProblems++
-        // 10문제를 풀 때마다 완료 처리 (10, 20, 30, ... 마다)
+        // 10문제를 풀 때마다 완료 처리하고 다시 0부터 시작
         if (completedProblems % 10 == 0) {
             isCompleted = true
             completedAt = LocalDateTime.now()
@@ -43,6 +43,12 @@ class ChapterProgress(
             isCompleted = false
             completedAt = null
         }
+    }
+    
+    fun resetProgress() {
+        completedProblems = 0
+        isCompleted = false
+        completedAt = null
     }
 
     fun getProgressRate(): Int {
