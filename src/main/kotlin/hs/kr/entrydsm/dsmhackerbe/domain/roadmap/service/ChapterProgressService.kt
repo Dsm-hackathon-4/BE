@@ -41,4 +41,8 @@ class ChapterProgressService(
         progress.addProgress()
         chapterProgressRepository.save(progress)
     }
+    
+    fun getChapterProgress(user: hs.kr.entrydsm.dsmhackerbe.domain.user.entity.User, chapter: hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Chapter): ChapterProgress? {
+        return chapterProgressRepository.findByUserAndChapter(user, chapter)
+    }
 }

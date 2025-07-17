@@ -131,34 +131,32 @@ class ProblemSolveService(
     }
     
     private fun checkChapterCompletion(user: hs.kr.entrydsm.dsmhackerbe.domain.user.entity.User, chapter: hs.kr.entrydsm.dsmhackerbe.domain.roadmap.entity.Chapter): ChapterCompleteInfo? {
-        // 챕터의 모든 문제 조회
-        val chapterProblems = problemRepository.findByChapterOrderByIdAsc(chapter)
-        if (chapterProblems.size != 10) return null // 챕터가 10문제가 아니면 무시
+        // ChapterProgress에서 이번에 완료되었는지 확인
+        val chapterProgress = chapterProgressService.getChapterProgress(user, chapter)
         
-        // 해당 챕터의 사용자 풀이 기록 조회
-        val chapterHistory = userProblemHistoryRepository.findByUserOrderBySolvedAtDesc(user)
-            .filter { it.problem.chapter?.id == chapter.id }
+        // 이번 문제 풀이로 인해 방금 완료된 경우만 반환
+        if (chapterProgress?.isCompleted == true && chapterProgress.completedProblems == 10) {
+            // 해당 챕터의 사용자 풀이 기록 조회
+            val chapterHistory = userProblemHistoryRepository.findByUserOrderBySolvedAtDesc(user)
+                .filter { it.problem.chapter?.id == chapter.id }
+            
+            // 챕터별 통계 계산
+            val totalXp = chapterHistory.sumOf { it.xpEarned }
+            val correctCount = chapterHistory.count { it.isCorrect }
+            val totalCount = chapterHistory.size
+            val accuracyRate = if (totalCount > 0) (correctCount * 100) / totalCount else 0
+            
+            return ChapterCompleteInfo(
+                isChapterCompleted = true,
+                chapterTitle = chapter.title,
+                totalXp = totalXp,
+                correctCount = correctCount,
+                totalCount = totalCount,
+                accuracyRate = accuracyRate
+            )
+        }
         
-        // 10문제를 모두 풀었는지 확인
-        val solvedProblemIds = chapterHistory.map { it.problem.id }.toSet()
-        val allProblemIds = chapterProblems.map { it.id }.toSet()
-        
-        if (solvedProblemIds != allProblemIds) return null // 아직 다 못 품
-        
-        // 챕터별 통계 계산
-        val totalXp = chapterHistory.sumOf { it.xpEarned }
-        val correctCount = chapterHistory.count { it.isCorrect }
-        val totalCount = chapterHistory.size
-        val accuracyRate = if (totalCount > 0) (correctCount * 100) / totalCount else 0
-        
-        return ChapterCompleteInfo(
-            isChapterCompleted = true,
-            chapterTitle = chapter.title,
-            totalXp = totalXp,
-            correctCount = correctCount,
-            totalCount = totalCount,
-            accuracyRate = accuracyRate
-        )
+        return null
     }
     
     private fun checkMultipleChoice(problemId: Long, userAnswer: String): Boolean {
