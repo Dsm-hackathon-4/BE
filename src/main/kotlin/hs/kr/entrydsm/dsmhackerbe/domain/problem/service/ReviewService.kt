@@ -214,6 +214,25 @@ class ReviewService(
         return false
     }
     
+    @Transactional(readOnly = true)
+    fun getReviewSummary(userEmail: String): hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ReviewSummaryResponse {
+        val user = userRepository.findByEmail(userEmail)
+            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
+        
+        val allReviews = reviewProblemRepository.findByUserAndIsCompleted(user, false)
+        
+        // 최근 24시간 이내에 추가된 복습을 "새로 생성된" 것으로 간주
+        val yesterday = java.time.LocalDateTime.now().minusDays(1)
+        val newReviews = allReviews.filter { it.addedAt.isAfter(yesterday) }
+        val ongoingReviews = allReviews.filter { it.addedAt.isBefore(yesterday) }
+        
+        return hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ReviewSummaryResponse(
+            newReviewCount = newReviews.size,
+            ongoingReviewCount = ongoingReviews.size,
+            totalReviewCount = allReviews.size
+        )
+    }
+    
     private fun isChoiceBasedProblem(type: ProblemType): Boolean {
         return when (type) {
             ProblemType.MULTIPLE_CHOICE,

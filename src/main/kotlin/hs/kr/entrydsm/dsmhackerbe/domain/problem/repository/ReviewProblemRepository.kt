@@ -12,6 +12,7 @@ interface ReviewProblemRepository : JpaRepository<ReviewProblem, Long> {
     fun findByUserAndProblem(user: User, problem: Problem): ReviewProblem?
     
     fun findByUserAndIsCompleted(user: User, isCompleted: Boolean, pageable: Pageable): Page<ReviewProblem>
+    fun findByUserAndIsCompleted(user: User, isCompleted: Boolean): List<ReviewProblem>
     
     @Query("SELECT rp FROM ReviewProblem rp JOIN rp.problem p JOIN p.category c WHERE rp.user = :user AND rp.isCompleted = :isCompleted AND c.name = :categoryName ORDER BY rp.addedAt DESC")
     fun findByUserAndIsCompletedAndCategoryName(user: User, isCompleted: Boolean, categoryName: String, pageable: Pageable): Page<ReviewProblem>

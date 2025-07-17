@@ -24,9 +24,10 @@ class IntegrationController(
     
     @PostMapping("/generate-problems")
     override fun generateProblems(
+        @Valid @RequestBody request: hs.kr.entrydsm.dsmhackerbe.domain.integration.dto.request.GenerateProblemsRequest,
         @AuthenticationPrincipal userDetails: UserDetails
     ): ResponseEntity<Map<String, String>> {
-        val message = integrationService.generateProblemsFromIntegration(userDetails.username)
+        val message = integrationService.generateProblemsFromIntegration(userDetails.username, request.userId)
         return ResponseEntity.ok(mapOf("message" to message))
     }
     

@@ -92,6 +92,15 @@ interface ProblemApiDocument {
     )
     fun getUserStats(userDetails: UserDetails): UserStatsResponse
 
+    @Operation(summary = "복습 요약 정보 조회", description = "새로 생성된 복습과 진행 중인 복습의 개수를 조회합니다.")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "복습 요약 정보 조회 성공"),
+            ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+        ]
+    )
+    fun getReviewSummary(userDetails: UserDetails): ResponseEntity<hs.kr.entrydsm.dsmhackerbe.domain.problem.dto.response.ReviewSummaryResponse>
+
     @Operation(summary = "카테고리별 복습 문제 목록", description = "특정 카테고리의 복습 문제들을 조회합니다.")
     @ApiResponses(
         value = [

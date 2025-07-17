@@ -23,11 +23,14 @@ interface IntegrationApiDocument {
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "문제 생성 요청 성공"),
-            ApiResponse(responseCode = "400", description = "연동된 서비스가 없음"),
+            ApiResponse(responseCode = "400", description = "잘못된 요청"),
             ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
         ]
     )
-    fun generateProblems(userDetails: UserDetails): ResponseEntity<Map<String, String>>
+    fun generateProblems(
+        @Valid @RequestBody request: hs.kr.entrydsm.dsmhackerbe.domain.integration.dto.request.GenerateProblemsRequest,
+        userDetails: UserDetails
+    ): ResponseEntity<Map<String, String>>
 
     @Operation(summary = "문제 생성 상태 조회", description = "문제 생성 배치 작업의 상태를 조회합니다.")
     @ApiResponses(
