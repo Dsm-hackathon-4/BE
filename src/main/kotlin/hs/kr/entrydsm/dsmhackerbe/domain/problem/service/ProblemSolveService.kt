@@ -106,13 +106,13 @@ class ProblemSolveService(
         // 챕터 진행도 업데이트 (정답 여부 상관없이)
         chapterProgressService.updateChapterProgress(userEmail, problem)
         
-        // 로드맵 진행도 업데이트 (챕터 완료 시)
-        roadmapProgressService.updateRoadmapProgress(userEmail, problem)
-        
-        // 챕터 완료 여부 확인
+        // 챕터 완료 여부 확인 (진행도 업데이트 후에 체크)
         val chapterCompleteInfo = if (problem.chapter != null) {
             checkChapterCompletion(user, problem.chapter!!)
         } else null
+        
+        // 로드맵 진행도 업데이트 (챕터 완료 시)
+        roadmapProgressService.updateRoadmapProgress(userEmail, problem)
         
         // 정답 조회
         val correctAnswer = getCorrectAnswer(problem)
